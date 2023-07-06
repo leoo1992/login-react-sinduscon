@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AuthContext } from '../../contexts/auth';
 import "./styles.css";
 import 'bootstrap/dist/css/bootstrap.css';
 import api from './axiosConfig';
 
 const LoginPage = () => {
+
+    const {authenticated, login} = useContext (AuthContext);
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        login (email, password);
         if (email && password) {
             try {
                 const response = await api.post('/login', {
@@ -28,6 +33,7 @@ const LoginPage = () => {
     return (
         <div id="login" className="d-flex p-4 justify-content-center align-items-center fw-bold">
             <h3 className="text-white">Login Sinduscon</h3>
+            <p>{String(authenticated)}</p>
             <form onSubmit={handleSubmit} className="form-login border-success w-100 p-4 rounded-3">
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label d-block">E-mail:</label>
