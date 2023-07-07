@@ -1,7 +1,14 @@
+
+@import url("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css");
+
 .cadastro {
   background-color: #f1f1f1;
 }
 
 .bg-cadastro {
   background-color: cadetblue;
+}
+
+.error-message{
+  color: red;
 }
