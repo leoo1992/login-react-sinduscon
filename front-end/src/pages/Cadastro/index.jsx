@@ -142,12 +142,12 @@ const Cadastro = () => {
   const isFormValid = Object.keys(formErrors).length === 0;
 
   return (
-    <div className="container">
+    <div className="container-fluid w-100 p-0 m-0 ">
       <h1 className="text-center bg-cadastro m-0 p-0 text-white">Cadastro</h1>
-      <div className="bg-cadastro d-flex justify-content-center align-items-center p-5 fw-bold">
-        <div className="cadastro w-100 w-md-50 w-lg-25 border-success rounded-3 p-4">
+      <div className="bg-cadastro d-flex justify-content-center align-items-center p-md-5 p-lg-5 p-sm-2 fw-bold">
+        <div className="cadastro  w-100 border-success rounded-3 p-4">
           <form onSubmit={handleSubmit}>
-            <div className="form-group pt-4">
+            <div className="form-group">
               <label>Email:</label>
               <input
                 type="email"
@@ -161,7 +161,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.email}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Senha:</label>
               <input
                 type="password"
@@ -175,7 +175,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.password}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Confirmar Senha:</label>
               <input
                 type="password"
@@ -191,7 +191,7 @@ const Cadastro = () => {
                 </div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Nome:</label>
               <input
                 type="text"
@@ -204,7 +204,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.nome}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Idade:</label>
               <input
                 type="text"
@@ -217,7 +217,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.idade}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Profissão:</label>
               <input
                 type="text"
@@ -230,7 +230,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.profissao}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Descrição:</label>
               <input
                 type="text"
@@ -243,7 +243,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.descricao}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Endereço:</label>
               <input
                 type="text"
@@ -256,7 +256,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.endereco}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Bairro:</label>
               <input
                 type="text"
@@ -269,7 +269,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.bairro}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Cidade:</label>
               <input
                 type="text"
@@ -282,7 +282,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.cidade}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Estado:</label>
               <input
                 type="text"
@@ -295,7 +295,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.estado}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Telefone:</label>
               <input
                 type="text"
@@ -308,7 +308,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.telefone}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Nome da Empresa:</label>
               <input
                 type="text"
@@ -321,7 +321,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.nome_empresa}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Prestador/Cliente:</label>
               <input
                 type="text"
@@ -336,7 +336,7 @@ const Cadastro = () => {
                 </div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>CPF/CNPJ:</label>
               <input
                 type="text"
@@ -349,7 +349,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.cpf_cnpj}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>LinkedIn:</label>
               <input
                 type="text"
@@ -362,7 +362,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.linkedin}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Instagram:</label>
               <input
                 type="text"
@@ -375,7 +375,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.instagram}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>WhatsApp:</label>
               <input
                 type="text"
@@ -388,7 +388,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.whatsapp}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Telegram:</label>
               <input
                 type="text"
@@ -401,7 +401,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.telegram}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Facebook:</label>
               <input
                 type="text"
@@ -414,7 +414,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.facebook}</div>
               )}
             </div>
-            <div className="form-group pt-4">
+            <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>YouTube:</label>
               <input
                 type="text"
@@ -427,7 +427,7 @@ const Cadastro = () => {
                 <div className="error-message">{formErrors.youtube}</div>
               )}
             </div>
-            <div className="text-center pt-5">
+            <div className="text-center pt-sm-1 pt-md-2 pt-lg-2">
               <button
                 type="submit"
                 className="btn btn-outline-success fw-bold"
