@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "./axiosConfig";
 
 import "./styles.css";
 
@@ -38,31 +39,13 @@ const Cadastro = () => {
     e.preventDefault();
 
     try {
-      const response = await postData("/cadastro", formData);
-      console.log(response); // Exemplo: imprime a resposta do servidor
+      const response = await api.post("/cadastro", formData);
+      console.log(response.data);
 
-      // Redirecionar para a rota /login
       navigate("/login");
     } catch (error) {
       console.error(error);
-      // Tratar o erro de forma adequada
     }
-  };
-
-  const postData = async (url, data) => {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error("Erro ao enviar os dados para o servidor");
-    }
-
-    return response.json();
   };
 
   return (
