@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database');
 
-const User = sequelize.define('User', {
+const Users = sequelize.define('Users', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -17,14 +17,12 @@ const User = sequelize.define('User', {
   },
   nome: {
     type: DataTypes.STRING,
-    allowNull: false
   },
   idade: {
-    type: DataTypes.INTEGER(3),
+    type: DataTypes.STRING,
   },
   profissao: {
     type: DataTypes.STRING,
-    allowNull: false
   },
   descricao: {
     type: DataTypes.STRING,
@@ -37,15 +35,12 @@ const User = sequelize.define('User', {
   },
   cidade: {
     type: DataTypes.STRING,
-    allowNull: false
   },
   estado: {
-    type: DataTypes.STRING(2),
-    allowNull: false
+    type: DataTypes.STRING,
   },
   telefone: {
     type: DataTypes.STRING,
-    allowNull: false
   },
   nome_empresa: {
     type: DataTypes.STRING,
@@ -54,8 +49,7 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
   },
   cpf_cnpj: {
-    type: DataTypes.INTEGER(13),
-    allowNull: false
+    type: DataTypes.STRING,
   }, 
   linkedin: {
     type: DataTypes.STRING,
@@ -77,7 +71,7 @@ const User = sequelize.define('User', {
   },
 
 }, {
-  timestamps: true
+  timestamps: false
 });
 
-module.exports = User;
+module.exports = Users;
