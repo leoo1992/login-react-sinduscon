@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import api from "./axiosConfig";
-import ReactModal from "react-modal";
 
 import "./styles.css";
 
@@ -29,7 +28,6 @@ const Cadastro = () => {
     youtube: "",
   });
 
-  const [modalOpen, setModalOpen] = useState(false);
   const [formErrors, setFormErrors] = useState({
     email: "",
     password: "",
@@ -125,25 +123,17 @@ const Cadastro = () => {
 
     try {
       await api.post("/cadastro", dataWithoutConfirmPassword);
-      setModalOpen(true);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleModalClose = () => {
-    try {
-      setModalOpen(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+ 
   const isFormValid = Object.keys(formErrors).length === 0;
 
   return (
     <div className="container-fluid w-100 p-0 m-0 ">
-      <h1 className="text-center bg-cadastro m-0 p-0 text-white">Cadastro</h1>
+      <h1 className="text-center bg-cadastro m-0 p-0 pt-4 text-danger">Cadastro</h1>
       <div className="bg-cadastro d-flex justify-content-center align-items-center p-md-5 p-lg-5 p-sm-2 fw-bold">
         <div className="cadastro  w-100 border-success rounded-3 p-4">
           <form onSubmit={handleSubmit}>
@@ -430,7 +420,7 @@ const Cadastro = () => {
             <div className="text-center pt-sm-1 pt-md-2 pt-lg-2">
               <button
                 type="submit"
-                className="btn btn-outline-success fw-bold"
+                className="btn btn-danger fw-bold"
                 disabled={!isFormValid}
               >
                 Cadastrar
@@ -439,15 +429,6 @@ const Cadastro = () => {
           </form>
         </div>
       </div>
-      <ReactModal
-        isOpen={modalOpen}
-        onRequestClose={handleModalClose}
-        contentLabel="Mensagem de Cadastro"
-      >
-        <h2>Cadastro realizado com sucesso!</h2>
-        <p>Clique sair para retornar ao menu de login.</p>
-        <button onClick={handleModalClose}>Sair</button>
-      </ReactModal>
     </div>
   );
 };

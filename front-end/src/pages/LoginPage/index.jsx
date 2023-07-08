@@ -3,6 +3,8 @@ import { AuthContext } from "../../contexts/auth";
 import "./styles.css";
 import "bootstrap/dist/css/bootstrap.css";
 import api from "./axiosConfig";
+import { Link } from "react-router-dom";
+import logo from "./Logo.jpg";
 
 const LoginPage = () => {
   const { authenticated, login } = useContext(AuthContext);
@@ -12,7 +14,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     login(email, password);
 
     if (email && password) {
@@ -36,11 +38,10 @@ const LoginPage = () => {
       id="login"
       className="d-flex p-4 justify-content-center align-items-center fw-bold"
     >
-      <h3 className="text-white">Login Sinduscon</h3>
-      <p>{String(authenticated)}</p>
+      <img src={logo} className='w-25' alt="Descrição da imagem" />
       <form
         onSubmit={handleSubmit}
-        className="form-login border-success w-100 p-4 rounded-3"
+        className="form-login border-primary w-100 p-4 rounded-3"
       >
         <div className="mb-3">
           <label htmlFor="email" className="form-label d-block">
@@ -57,40 +58,35 @@ const LoginPage = () => {
           />
         </div>
         <div className="mb-3">
-          <div className="col-auto">
-            <label htmlFor="password" className="col-form-label d-block">
-              Senha:
-            </label>
-          </div>
-          <div className="col-auto">
-            <input
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              type="password"
-              className="form-control border-primary w-100"
-              aria-describedby="passwordHelpInline"
-              required
-            />
-          </div>
+          <label htmlFor="password" className="col-form-label d-block">
+            Senha:
+          </label>
+          <input
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+            className="form-control border-primary w-100"
+            aria-describedby="passwordHelpInline"
+            required
+          />
         </div>
         <div className="text-center pt-3">
           <button
             type="submit"
-            className="action-login btn btn-outline-success fw-bold"
+            className="action-login btn btn-primary fw-bold"
           >
             Entrar
           </button>
         </div>
-
       </form>
       <div className="text-center">
-          <span>ou</span>
-        </div>
+        <h4 className='text-white'>ou</h4>
+      </div>
       <div className="text-center">
-        <button className="btn btn-warning fw-bold">
-          Cadastre-se aqui
-        </button>
+        <Link to="/cadastro" className="btn btn-danger fw-bold">
+          Registrar
+        </Link>
       </div>
     </div>
   );
