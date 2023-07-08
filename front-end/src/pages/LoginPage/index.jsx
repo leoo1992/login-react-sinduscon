@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../contexts/auth";
+import { useNavigate } from "react-router-dom";
 import "./styles.css";
 import "bootstrap/dist/css/bootstrap.css";
 import api from "./axiosConfig";
@@ -8,6 +9,7 @@ import logo from "./Logo.jpg";
 
 const LoginPage = () => {
   const { authenticated, login } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +40,9 @@ const LoginPage = () => {
       id="login"
       className="d-flex p-4 justify-content-center align-items-center fw-bold"
     >
+      <Link to="/" className="justify-content-center align-items-center text-center w-50 p-5">
       <img src={logo} className='w-25' alt="Descrição da imagem" />
+      </Link>
       <form
         onSubmit={handleSubmit}
         className="form-login border-primary w-100 p-4 rounded-3"

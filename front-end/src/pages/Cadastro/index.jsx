@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import api from "./axiosConfig";
+import { Link } from "react-router-dom";
 
 import "./styles.css";
 
@@ -128,12 +129,16 @@ const Cadastro = () => {
     }
   };
 
- 
   const isFormValid = Object.keys(formErrors).length === 0;
 
   return (
-    <div className="container-fluid w-100 p-0 m-0 ">
-      <h1 className="text-center bg-cadastro m-0 p-0 pt-4 text-danger">Cadastro</h1>
+    <div className="container-fluid w-100 p-0 m-0 bg-cadastro">
+      <Link to="/" className="btn btn-danger fw-bold">
+        Voltar
+      </Link>
+      <h1 className="text-center m-0 p-0 pt-4 text-danger">
+        Cadastro
+      </h1>
       <div className="bg-cadastro d-flex justify-content-center align-items-center p-md-5 p-lg-5 p-sm-2 fw-bold">
         <div className="cadastro  w-100 border-success rounded-3 p-4">
           <form onSubmit={handleSubmit}>
