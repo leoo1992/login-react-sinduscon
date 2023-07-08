@@ -129,7 +129,7 @@ const Cadastro = () => {
     }
   };
 
-  const isFormValid = Object.keys(formErrors).length === 0;
+  let isFormValid = Object.keys(formErrors).length === 0;
 
   return (
     <div className="container-fluid w-100 p-0 m-0 bg-cadastro">
@@ -426,7 +426,6 @@ const Cadastro = () => {
               <button
                 type="submit"
                 className="btn btn-danger fw-bold"
-                disabled={!isFormValid}
               >
                 Cadastrar
               </button>
