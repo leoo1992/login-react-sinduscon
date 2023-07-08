@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "./axiosConfig";
 import { Link } from "react-router-dom";
 
 import "./styles.css";
 
-const Cadastro = () => {
+const Cadastro = () => {  
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -61,27 +63,54 @@ const Cadastro = () => {
     }
   }, [formErrors]);
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    if (name === "email") {
+      try {
+        const response = await api.get(`/consultaEmail/${value}`);
+        if (response.data.message === "O email já está cadastrado.") {
+          setFormErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: "O email já está cadastrado.",
+          }));
+        } else {
+          setFormErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: "",
+          }));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    } else if (name === "confirmPassword") {
+      if (formData.password !== value) {
+        setFormErrors((prevErrors) => ({
+          ...prevErrors,
+          confirmPassword: "As senhas não correspondem",
+        }));
+      } else {
+        setFormErrors((prevErrors) => ({
+          ...prevErrors,
+          confirmPassword: "",
+        }));
+      }
+    } else if (!value) {
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "Campo obrigatório",
+      }));
+    } else {
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "",
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Verificar a correspondência de senha
-    if (formData.password !== formData.confirmPassword) {
-      setFormErrors({
-        ...formErrors,
-        confirmPassword: "As senhas não correspondem",
-      });
-      return;
-    } else {
-      setFormErrors({
-        ...formErrors,
-        confirmPassword: "",
-      });
-    }
 
     const requiredFields = [
       "email",
@@ -115,30 +144,26 @@ const Cadastro = () => {
       }
     });
 
+    setFormErrors(errors);
+
     if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
       return;
     }
 
-    const { confirmPassword, ...dataWithoutConfirmPassword } = formData;
-
     try {
-      await api.post("/cadastro", dataWithoutConfirmPassword);
+      await api.post("/cadastro", formData);
+      navigate("/login"); 
     } catch (error) {
       console.error(error);
     }
   };
-
-  let isFormValid = Object.keys(formErrors).length === 0;
 
   return (
     <div className="container-fluid w-100 p-0 m-0 bg-cadastro">
       <Link to="/" className="btn btn-danger fw-bold">
         Voltar
       </Link>
-      <h1 className="text-center m-0 p-0 pt-4 text-danger">
-        Cadastro
-      </h1>
+      <h1 className="text-center m-0 p-0 pt-4 text-danger">Cadastro</h1>
       <div className="bg-cadastro d-flex justify-content-center align-items-center p-md-5 p-lg-5 p-sm-2 fw-bold">
         <div className="cadastro  w-100 border-success rounded-3 p-4">
           <form onSubmit={handleSubmit}>
@@ -423,10 +448,7 @@ const Cadastro = () => {
               )}
             </div>
             <div className="text-center pt-sm-1 pt-md-2 pt-lg-2">
-              <button
-                type="submit"
-                className="btn btn-danger fw-bold"
-              >
+              <button type="submit" className="btn btn-danger fw-bold">
                 Cadastrar
               </button>
             </div>
