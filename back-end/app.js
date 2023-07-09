@@ -1,4 +1,4 @@
-const dotenv = require("dotenv");
+require('dotenv').config();
 const express = require("express");
 const Users = require("./models/users");
 const sequelize = require("./database");
@@ -8,7 +8,6 @@ const { body, validationResult } = require("express-validator");
 const sanitizeHtml = require("sanitize-html");
 const jwt = require("jsonwebtoken");
 
-dotenv.config();
 const app = express();
 const port = 3000;
 
@@ -16,6 +15,7 @@ app.use(express.json());
 app.use(cors());
 
 // Conexão com o banco de dados
+console.log("Tentando conectar ao banco de dados...");
 sequelize
   .authenticate()
   .then(() => {
@@ -24,6 +24,7 @@ sequelize
   .catch((err) => {
     console.error("Erro ao conectar ao banco de dados:", err);
   });
+  console.log("Tentando sincronizar os modelos com o banco de dados...");
   sequelize
   .sync()
   .then(() => {
