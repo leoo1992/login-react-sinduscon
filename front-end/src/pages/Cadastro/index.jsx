@@ -2,10 +2,22 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./axiosConfig";
 import { Link } from "react-router-dom";
+import UAParser from 'ua-parser-js';
 
 import "./styles.css";
 
-const Cadastro = () => {  
+const Cadastro = () => {
+  const userAgent = navigator.userAgent;
+  const parser = new UAParser();
+  const result = parser.setUA(userAgent).getResult();
+
+  const browser = result.browser;
+  const os = result.os;
+
+  console.log(browser.name); // Nome do navegador
+  console.log(os.name); // Nome do sistema operacional
+
+  const [isFormValid, setIsFormValid] = useState(true);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -67,96 +79,119 @@ const Cadastro = () => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
 
-    if (name === "email") {
-      try {
-        const response = await api.get(`/consultaEmail/${value}`);
-        if (response.data.message === "O email já está cadastrado.") {
-          setFormErrors((prevErrors) => ({
-            ...prevErrors,
-            [name]: "O email já está cadastrado.",
-          }));
-        } else {
-          setFormErrors((prevErrors) => ({
-            ...prevErrors,
-            [name]: "",
-          }));
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    } else if (name === "confirmPassword") {
-      if (formData.password !== value) {
-        setFormErrors((prevErrors) => ({
-          ...prevErrors,
-          confirmPassword: "As senhas não correspondem",
-        }));
-      } else {
-        setFormErrors((prevErrors) => ({
-          ...prevErrors,
-          confirmPassword: "",
-        }));
-      }
+    if (name === "confirmPassword") {
+      // Lógica para verificar a confirmação de senha...
     } else if (!value) {
       setFormErrors((prevErrors) => ({
         ...prevErrors,
         [name]: "Campo obrigatório",
       }));
+    } else if (
+      name === "email" &&
+      formErrors.email === "O email já está cadastrado."
+    ) {
+      // Não limpar a mensagem de erro se o campo de email já está cadastrado
+      return;
     } else {
       setFormErrors((prevErrors) => ({
         ...prevErrors,
         [name]: "",
       }));
     }
+
+    const hasErrors = Object.values(formErrors).some((error) => error !== "");
+    setIsFormValid(!hasErrors);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleEmailBlur = async () => {
+    try {
+      if (!formData.email) {
+        // Não faz nada se o campo de e-mail estiver vazio
+        return;
+      }
 
+      const response = await api.get(`/consultaEmail/${formData.email}`);
+      if (response.data.error === "O email já está cadastrado.") {
+        setFormErrors((prevErrors) => ({
+          ...prevErrors,
+          email: "O email já está cadastrado.",
+        }));
+      } else {
+        setFormErrors((prevErrors) => ({
+          ...prevErrors,
+          email: "",
+        }));
+      }
+
+      const hasErrors = Object.values(formErrors).some((error) => error !== "");
+      setIsFormValid(!hasErrors);
+    } catch (error) {
+      console.error(error);
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        email: "Erro ao verificar o email.",
+      }));
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  
     const requiredFields = [
       "email",
       "password",
       "confirmPassword",
-      "nome",
-      "idade",
-      "profissao",
-      "descricao",
-      "endereco",
-      "bairro",
-      "cidade",
-      "estado",
-      "telefone",
-      "nome_empresa",
-      "prestador_cliente",
-      "cpf_cnpj",
-      "linkedin",
-      "instagram",
-      "whatsapp",
-      "telegram",
-      "facebook",
-      "youtube",
+      // ...resto dos campos obrigatórios
     ];
-
+  
+    if (formErrors.email === "O email já está cadastrado.") {
+      setIsFormValid(false); // Define o formulário como inválido
+      return; // Encerra o método sem fazer a requisição de cadastro
+    }
+  
+    if (
+      formData.password.length !== 6 ||
+      formData.confirmPassword.length !== 6
+    ) {
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        password: "A senha deve ter exatamente 6 caracteres.",
+        confirmPassword:
+          "A confirmação de senha deve ter exatamente 6 caracteres.",
+      }));
+      return;
+    }
+  
     const errors = {};
-
+  
     requiredFields.forEach((field) => {
       if (!formData[field]) {
         errors[field] = "Campo obrigatório";
       }
     });
-
+  
     setFormErrors(errors);
-
+  
     if (Object.keys(errors).length > 0) {
       return;
     }
-
-    try {
-      await api.post("/cadastro", formData);
-      navigate("/login"); 
-    } catch (error) {
-      console.error(error);
-    }
+  
+    const dataToSubmit = {
+      ...formData,
+      confirmPassword: undefined, // Removendo o campo confirmPassword do objeto enviado
+    };
+  
+    api
+      .post("/cadastro", dataToSubmit)
+      .then(() => {
+        setFormErrors({});
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
+  
 
   return (
     <div className="container-fluid w-100 p-0 m-0 bg-cadastro">
@@ -175,10 +210,18 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.email}
                 onChange={handleChange}
+                onBlur={handleEmailBlur}
                 required
               />
               {formErrors.email && (
                 <div className="error-message">{formErrors.email}</div>
+              )}
+              {!formErrors.email && (
+                <div className="error-message">
+                  {formErrors.email === "O email já está cadastrado."
+                    ? formErrors.email
+                    : null}
+                </div>
               )}
             </div>
             <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
@@ -189,10 +232,16 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.password}
                 onChange={handleChange}
+                maxLength={6}
                 required
               />
               {formErrors.password && (
                 <div className="error-message">{formErrors.password}</div>
+              )}
+              {formData.password.length !== 6 && (
+                <div className="error-message">
+                  A senha deve ter exatamente 6 caracteres.
+                </div>
               )}
             </div>
             <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
@@ -202,6 +251,7 @@ const Cadastro = () => {
                 name="confirmPassword"
                 className="form-control"
                 value={formData.confirmPassword}
+                maxLength={6}
                 onChange={handleChange}
                 required
               />
@@ -209,6 +259,14 @@ const Cadastro = () => {
                 <div className="error-message" ref={errorRef}>
                   {formErrors.confirmPassword}
                 </div>
+              )}
+              {formData.confirmPassword.length !== 6 && (
+                <div className="error-message">
+                  A confirmação de senha deve ter exatamente 6 caracteres.
+                </div>
+              )}
+              {formData.password !== formData.confirmPassword && (
+                <div className="error-message">As senhas não coincidem.</div>
               )}
             </div>
             <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
@@ -219,6 +277,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.nome}
                 onChange={handleChange}
+                required
               />
               {formErrors.nome && (
                 <div className="error-message">{formErrors.nome}</div>
@@ -232,6 +291,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.idade}
                 onChange={handleChange}
+                required
               />
               {formErrors.idade && (
                 <div className="error-message">{formErrors.idade}</div>
@@ -245,6 +305,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.profissao}
                 onChange={handleChange}
+                required
               />
               {formErrors.profissao && (
                 <div className="error-message">{formErrors.profissao}</div>
@@ -258,6 +319,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.descricao}
                 onChange={handleChange}
+                required
               />
               {formErrors.descricao && (
                 <div className="error-message">{formErrors.descricao}</div>
@@ -271,6 +333,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.endereco}
                 onChange={handleChange}
+                required
               />
               {formErrors.endereco && (
                 <div className="error-message">{formErrors.endereco}</div>
@@ -284,6 +347,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.bairro}
                 onChange={handleChange}
+                required
               />
               {formErrors.bairro && (
                 <div className="error-message">{formErrors.bairro}</div>
@@ -297,6 +361,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.cidade}
                 onChange={handleChange}
+                required
               />
               {formErrors.cidade && (
                 <div className="error-message">{formErrors.cidade}</div>
@@ -310,6 +375,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.estado}
                 onChange={handleChange}
+                required
               />
               {formErrors.estado && (
                 <div className="error-message">{formErrors.estado}</div>
@@ -323,6 +389,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.telefone}
                 onChange={handleChange}
+                required
               />
               {formErrors.telefone && (
                 <div className="error-message">{formErrors.telefone}</div>
@@ -336,6 +403,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.nome_empresa}
                 onChange={handleChange}
+                required
               />
               {formErrors.nome_empresa && (
                 <div className="error-message">{formErrors.nome_empresa}</div>
@@ -349,6 +417,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.prestador_cliente}
                 onChange={handleChange}
+                required
               />
               {formErrors.prestador_cliente && (
                 <div className="error-message">
@@ -364,6 +433,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.cpf_cnpj}
                 onChange={handleChange}
+                required
               />
               {formErrors.cpf_cnpj && (
                 <div className="error-message">{formErrors.cpf_cnpj}</div>
@@ -377,6 +447,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.linkedin}
                 onChange={handleChange}
+                required
               />
               {formErrors.linkedin && (
                 <div className="error-message">{formErrors.linkedin}</div>
@@ -390,6 +461,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.instagram}
                 onChange={handleChange}
+                required
               />
               {formErrors.instagram && (
                 <div className="error-message">{formErrors.instagram}</div>
@@ -403,6 +475,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.whatsapp}
                 onChange={handleChange}
+                required
               />
               {formErrors.whatsapp && (
                 <div className="error-message">{formErrors.whatsapp}</div>
@@ -416,6 +489,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.telegram}
                 onChange={handleChange}
+                required
               />
               {formErrors.telegram && (
                 <div className="error-message">{formErrors.telegram}</div>
@@ -429,6 +503,7 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.facebook}
                 onChange={handleChange}
+                required
               />
               {formErrors.facebook && (
                 <div className="error-message">{formErrors.facebook}</div>
@@ -442,12 +517,20 @@ const Cadastro = () => {
                 className="form-control"
                 value={formData.youtube}
                 onChange={handleChange}
+                required
               />
               {formErrors.youtube && (
                 <div className="error-message">{formErrors.youtube}</div>
               )}
             </div>
             <div className="text-center pt-sm-1 pt-md-2 pt-lg-2">
+              {!isFormValid && (
+                <div className="error-message">
+                  {formErrors.email === "O email já está cadastrado."
+                    ? formErrors.email
+                    : "Há campos a serem verificados."}
+                </div>
+              )}
               <button type="submit" className="btn btn-danger fw-bold">
                 Cadastrar
               </button>

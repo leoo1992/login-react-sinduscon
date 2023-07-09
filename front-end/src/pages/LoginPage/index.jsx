@@ -6,10 +6,20 @@ import "bootstrap/dist/css/bootstrap.css";
 import api from "./axiosConfig";
 import { Link } from "react-router-dom";
 import logo from "./Logo.jpg";
+import UAParser from 'ua-parser-js';
 
 const LoginPage = () => {
   const { authenticated, login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const userAgent = navigator.userAgent;
+  const parser = new UAParser();
+  const result = parser.setUA(userAgent).getResult();
+
+  const browser = result.browser;
+  const os = result.os;
+
+  console.log(browser.name); // Nome do navegador
+  console.log(os.name); // Nome do sistema operacional
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
