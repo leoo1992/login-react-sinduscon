@@ -1,33 +1,27 @@
-import React, { useState, useContext } from "react";
-import { AuthContext } from "../../contexts/auth";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
 import "./styles.css";
 import "bootstrap/dist/css/bootstrap.css";
-import api from "./axiosConfig";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "./Logo.jpg";
-import UAParser from 'ua-parser-js';
+import api from "./axiosConfig";
+import { AuthContext } from "../../contexts/auth";
 
 const LoginPage = () => {
-  const { authenticated, login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const userAgent = navigator.userAgent;
-  const parser = new UAParser();
-  const result = parser.setUA(userAgent).getResult();
-
-  const browser = result.browser;
-  const os = result.os;
-
-  console.log(browser.name); // Nome do navegador
-  console.log(os.name); // Nome do sistema operacional
+  const { login, logout } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // eslint-disable-next-line
+  useEffect(() => {
+  // eslint-disable-next-line
+    logout(); // Executa o logout quando a página é iniciada
+  // eslint-disable-next-line
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    login(email, password);
 
     if (email && password) {
       try {
@@ -35,23 +29,39 @@ const LoginPage = () => {
           email: email,
           password: password,
         });
-        console.log(response.data.message);
+
+        if (response.status === 200) {
+          login(email, password)
+            .then(() => {
+              navigate("/auth"); // Redireciona para a rota privada após o login bem-sucedido
+            })
+            .catch((error) => {
+              console.error("Erro ao fazer login:", error);
+              // Realize as ações apropriadas para tratar o erro, como exibir uma mensagem de erro.
+            });
+        } else {
+          console.log("Credenciais inválidas");
+          // Realize as ações apropriadas para credenciais inválidas, como exibir uma mensagem de erro.
+        }
       } catch (error) {
-        console.error(error.response.data.error);
+        console.error("Erro ao fazer login:", error);
+        // Realize as ações apropriadas para tratar o erro, como exibir uma mensagem de erro.
       }
     } else {
       console.log("Preencha todos os campos!");
     }
-    setEmail("");
-    setPassword("");
   };
+
   return (
     <div
       id="login"
       className="d-flex p-4 justify-content-center align-items-center fw-bold"
     >
-      <Link to="/" className="justify-content-center align-items-center text-center w-50 p-5">
-      <img src={logo} className='w-25' alt="Descrição da imagem" />
+      <Link
+        to="/"
+        className="justify-content-center align-items-center text-center w-50 p-5"
+      >
+        <img src={logo} className="w-25" alt="Descrição da imagem" />
       </Link>
       <form
         onSubmit={handleSubmit}
@@ -95,7 +105,7 @@ const LoginPage = () => {
         </div>
       </form>
       <div className="text-center">
-        <h4 className='text-white'>ou</h4>
+        <h4 className="text-white">ou</h4>
       </div>
       <div className="text-center">
         <Link to="/cadastro" className="btn btn-danger fw-bold">

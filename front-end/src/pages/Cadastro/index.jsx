@@ -2,21 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./axiosConfig";
 import { Link } from "react-router-dom";
-import UAParser from 'ua-parser-js';
 
 import "./styles.css";
 
 const Cadastro = () => {
-  const userAgent = navigator.userAgent;
-  const parser = new UAParser();
-  const result = parser.setUA(userAgent).getResult();
-
-  const browser = result.browser;
-  const os = result.os;
-
-  console.log(browser.name); // Nome do navegador
-  console.log(os.name); // Nome do sistema operacional
-
   const [isFormValid, setIsFormValid] = useState(true);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -136,19 +125,19 @@ const Cadastro = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     const requiredFields = [
       "email",
       "password",
       "confirmPassword",
       // ...resto dos campos obrigatórios
     ];
-  
+
     if (formErrors.email === "O email já está cadastrado.") {
       setIsFormValid(false); // Define o formulário como inválido
       return; // Encerra o método sem fazer a requisição de cadastro
     }
-  
+
     if (
       formData.password.length !== 6 ||
       formData.confirmPassword.length !== 6
@@ -161,26 +150,26 @@ const Cadastro = () => {
       }));
       return;
     }
-  
+
     const errors = {};
-  
+
     requiredFields.forEach((field) => {
       if (!formData[field]) {
         errors[field] = "Campo obrigatório";
       }
     });
-  
+
     setFormErrors(errors);
-  
+
     if (Object.keys(errors).length > 0) {
       return;
     }
-  
+
     const dataToSubmit = {
       ...formData,
       confirmPassword: undefined, // Removendo o campo confirmPassword do objeto enviado
     };
-  
+
     api
       .post("/cadastro", dataToSubmit)
       .then(() => {
@@ -191,7 +180,6 @@ const Cadastro = () => {
         console.error(error);
       });
   };
-  
 
   return (
     <div className="container-fluid w-100 p-0 m-0 bg-cadastro">
@@ -254,6 +242,8 @@ const Cadastro = () => {
                 maxLength={6}
                 onChange={handleChange}
                 required
+                onCopy={(e) => e.preventDefault()}
+                onPaste={(e) => e.preventDefault()}
               />
               {formErrors.confirmPassword && (
                 <div className="error-message" ref={errorRef}>
@@ -286,13 +276,24 @@ const Cadastro = () => {
             <div className="form-group pt-sm-1 pt-md-2 pt-lg-2">
               <label>Idade:</label>
               <input
-                type="text"
+                type="number"
                 name="idade"
                 className="form-control"
                 value={formData.idade}
-                onChange={handleChange}
+                min="1"
+                max="200"
+                step="1"
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  const intValue = parseInt(inputValue);
+
+                  if (inputValue === "" || (intValue >= 1 && intValue <= 200)) {
+                    handleChange(e);
+                  }
+                }}
                 required
               />
+
               {formErrors.idade && (
                 <div className="error-message">{formErrors.idade}</div>
               )}

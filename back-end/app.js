@@ -1,12 +1,10 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const Users = require("./models/users");
 const sequelize = require("./database");
 const cors = require("cors");
-const bcrypt = require("bcrypt");
 const { body, validationResult } = require("express-validator");
 const sanitizeHtml = require("sanitize-html");
-const jwt = require("jsonwebtoken");
 
 const app = express();
 const port = 3000;
@@ -24,8 +22,8 @@ sequelize
   .catch((err) => {
     console.error("Erro ao conectar ao banco de dados:", err);
   });
-  console.log("Tentando sincronizar os modelos com o banco de dados...");
-  sequelize
+console.log("Tentando sincronizar os modelos com o banco de dados...");
+sequelize
   .sync()
   .then(() => {
     console.log("Modelos sincronizados com o banco de dados.");
@@ -36,46 +34,29 @@ sequelize
   .catch((err) => {
     console.error("Erro ao sincronizar os modelos com o banco de dados:", err);
   });
+
 // Rota para autenticação
-app.post(
-  "/login",
-  [
-    body("email")
-      .isEmail()
-      .withMessage("O email deve ser um endereço de email válido."),
-    body("password").notEmpty().withMessage("A senha é obrigatória."),
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-      const { email, password } = req.body;
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
 
-      const user = await Users.findOne({
-        where: {
-          email: email,
-        },
-      });
+  try {
+    const user = await Users.findOne({
+      where: {
+        email: email,
+        password: password,
+      },
+    });
 
-      if (user) {
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (passwordMatch) {
-          const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
-          res.status(200).json({ token: token });
-        } else {
-          res.status(401).json({ error: "Credenciais inválidas." });
-        }
-      } else {
-        res.status(401).json({ error: "Credenciais inválidas." });
-      }
-    } catch (err) {
-      console.error("Erro ao realizar consulta:", err);
-      res.status(500).json({ error: "Erro ao realizar consulta." });
+    if (user) {
+      res.status(200).json({ message: "Login bem-sucedido" });
+    } else {
+      res.sendStatus(401); // Credenciais inválidas
     }
+  } catch (err) {
+    console.error("Erro ao realizar consulta:", err);
+    res.sendStatus(500);
   }
-);
+});
 
 // Rota para cadastro
 app.post(
@@ -131,13 +112,10 @@ app.post(
         return res.status(400).json({ error: "O e-mail já está cadastrado." });
       }
 
-      // Criptografar a senha
-      const hashedPassword = await bcrypt.hash(formData.password, 10);
-
       // Criar o novo usuário com a senha criptografada
       const createdUser = await Users.create({
         email: formData.email,
-        password: hashedPassword,
+        password: formData.password,
         nome: formData.nome,
         idade: formData.idade,
         profissao: formData.profissao,
